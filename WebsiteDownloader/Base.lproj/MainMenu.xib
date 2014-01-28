@@ -650,7 +650,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="390" width="480" height="360"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1178"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1058"/>
             <view key="contentView" id="372">
                 <rect key="frame" x="0.0" y="0.0" width="480" height="360"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -664,6 +664,28 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vn2-kI-HVk">
+                        <rect key="frame" x="167" y="210" width="169" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="GetImageUrls" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="oFP-Fs-ndh">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="TestURL:" target="494" id="whw-80-400"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mcV-Xs-nad">
+                        <rect key="frame" x="167" y="163" width="169" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="DownloadImages" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="eWc-0m-g5b">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="DownloadImages:" target="494" id="77W-cv-03n"/>
+                        </connections>
+                    </button>
                 </subviews>
             </view>
         </window>
@@ -673,5 +695,13 @@
             </connections>
         </customObject>
         <customObject id="420" customClass="NSFontManager"/>
+        <button verticalHuggingPriority="750" id="JKS-Ey-T0r">
+            <rect key="frame" x="0.0" y="0.0" width="82" height="32"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SQh-w5-fh1">
+                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                <font key="font" metaFont="system"/>
+            </buttonCell>
+        </button>
     </objects>
 </document>

@@ -9,7 +9,12 @@
 #import <Cocoa/Cocoa.h>
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
-
+{
+@private
+	NSMutableArray *uniquearray;
+    NSMutableArray *imageurlarray;
+    
+}
 @property (assign) IBOutlet NSWindow *window;
 
 @end
