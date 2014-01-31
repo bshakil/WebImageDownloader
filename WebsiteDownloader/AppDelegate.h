@@ -16,5 +16,6 @@
     
 }
 @property (assign) IBOutlet NSWindow *window;
+@property (weak) IBOutlet NSTextField *MainURL;
 
 @end
