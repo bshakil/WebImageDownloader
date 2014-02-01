@@ -12,6 +12,10 @@
 
 - (IBAction)GetChildURls:(id)sender
 {
+   
+    
+
+    
     
     NSError *error;
     NSURL *url = [NSURL URLWithString:self.MainURL.stringValue];
@@ -30,7 +34,13 @@
         [arrayOfURLs addObject:stringURL];
         uniquearray= [arrayOfURLs valueForKeyPath:@"@distinctUnionOfObjects.self"];
     }
+    for (id obj in uniquearray)
+    {
+        [_URLarrayController addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:obj,@"URLs" ,nil]];
+    }
+    
 }
+
 
 - (IBAction)GetImageUrls:(id)sender {
     imageurlarray = [[NSMutableArray alloc] init];
@@ -48,7 +58,7 @@
             
         }
         NSString *bStr = [[NSString alloc] initWithData:burlData encoding:NSASCIIStringEncoding];
-        NSLog(@"content = %@", bStr);
+        //NSLog(@"content = %@", bStr);
         //NSString *urlRegEx=@"http?://llthumb([-\\w\\.]+)+(:\\d+)?(/([\\w/_\\.]*(\\?\\S+)?)?)?(\\jpg)";
        
          NSString *urlRegEx = @"http://llthumb.bids.com/mod/sales/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*";
@@ -70,20 +80,41 @@
     NSPredicate *sPredicate =
     [NSPredicate predicateWithFormat:@"SELF contains[c] 'super'"];
     [imageurlarray filterUsingPredicate:sPredicate];
-    result = [[imageurlarray valueForKey:@"description"] componentsJoinedByString:@"\r"];
-    NSLog(@"aStr:%@",result);
+    NSRange range = NSMakeRange(0, [[_URLarrayController arrangedObjects] count]);
+    [_URLarrayController removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
+    for (id obj in imageurlarray)
+    {
+        [_URLarrayController addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:obj,@"URLs" ,nil]];
+    }
+    
+    
+    
 }
 - (IBAction)DownloadImages:(id)sender {
+    NSString *tvarDirectory;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSSavePanel *tvarNSSavePanelObj	= [NSSavePanel savePanel];
+    NSInteger tvarInt	= [tvarNSSavePanelObj runModal];
+    if(tvarInt == NSOKButton){
+        tvarDirectory = [tvarNSSavePanelObj directory];
+    }
+    else
+    {
+        tvarDirectory = [paths objectAtIndex:0];
+    }
+    
+    self.SavePath.stringValue=tvarDirectory;
+
+    
+    
      NSError *error;
     for (id obj in imageurlarray)
     {
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        //NSString *filePath = [NSString stringWithFormat:@"%@/%@", [paths objectAtIndex:0],@"index.jpg"];
         NSString *url =[NSString stringWithFormat:@"%@",obj];
         NSString *theFileName = [[url lastPathComponent] stringByDeletingPathExtension];
         NSURL *burl = [NSURL URLWithString:url];
         NSData *data = [NSData dataWithContentsOfURL:burl options:NSDataReadingUncached error:&error];
-        NSString *filePath = [NSString stringWithFormat:@"%@/%@.jpg", [paths objectAtIndex:0],theFileName];
+        NSString *filePath = [NSString stringWithFormat:@"%@/%@.jpg", tvarDirectory,theFileName];
         [data writeToFile:filePath atomically:YES];
     }
 }

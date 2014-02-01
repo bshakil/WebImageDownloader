@@ -17,5 +17,7 @@
 }
 @property (assign) IBOutlet NSWindow *window;
 @property (weak) IBOutlet NSTextField *MainURL;
+@property (weak) IBOutlet NSArrayController *URLarrayController;
+@property (weak) IBOutlet NSTextField *SavePath;
 
 @end
