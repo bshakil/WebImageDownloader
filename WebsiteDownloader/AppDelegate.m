@@ -10,27 +10,30 @@
 
 @implementation AppDelegate
 
-- (IBAction)GetChildURls:(id)sender
+- (IBAction)GetPageSource:(id)sender
 {
-   
-    
-
-    
-    
-    NSError *error;
     NSURL *url = [NSURL URLWithString:self.MainURL.stringValue];
     NSData *urlData = [NSData dataWithContentsOfURL:url];
-    NSString *aStr = [[NSString alloc] initWithData:urlData encoding:NSASCIIStringEncoding];
-    NSString *urlRegEx = @"/product/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*";
+    MainWebpageSource = [[NSString alloc] initWithData:urlData encoding:NSASCIIStringEncoding];
+    self.textSource.stringValue=MainWebpageSource;
+    self.RootURL.stringValue=[url host];
+    self.ImageRootURL.stringValue= [NSString stringWithFormat:@"http://%@",[url host]];
+}
+
+- (IBAction)GetChildURLs:(id)sender {
+    NSRange range = NSMakeRange(0, [[_URLarrayController arrangedObjects] count]);
+    [_URLarrayController removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
+    NSError *error;
+    NSString *urlRegEx = [NSString stringWithFormat:@"%@[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*",self.FilterURL.stringValue];
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:urlRegEx options:NSRegularExpressionCaseInsensitive error:&error];
-    NSArray *arrayOfAllMatches = [regex matchesInString:aStr options:0 range:NSMakeRange(0, [aStr length])];
+    NSArray *arrayOfAllMatches = [regex matchesInString:MainWebpageSource options:0 range:NSMakeRange(0, [MainWebpageSource length])];
     NSMutableArray *arrayOfURLs = [[NSMutableArray alloc] init];
     uniquearray= [[NSMutableArray alloc] init];
     for (NSTextCheckingResult *match in arrayOfAllMatches)
     {
-        NSString *substringForMatch = [aStr substringWithRange:match.range];
+        NSString *substringForMatch = [MainWebpageSource substringWithRange:match.range];
         // NSLog(@"%@",substringForMatch);
-        NSString *stringURL=[NSString stringWithFormat:@"www.modnique.com%@",substringForMatch];
+        NSString *stringURL=[NSString stringWithFormat:@"%@%@",self.RootURL.stringValue,substringForMatch];
         [arrayOfURLs addObject:stringURL];
         uniquearray= [arrayOfURLs valueForKeyPath:@"@distinctUnionOfObjects.self"];
     }
@@ -38,47 +41,111 @@
     {
         [_URLarrayController addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:obj,@"URLs" ,nil]];
     }
-    
+    self.textSource.stringValue=@"";
 }
 
 
-- (IBAction)GetImageUrls:(id)sender {
+- (IBAction)GetImageSource:(id)sender {
+    
     imageurlarray = [[NSMutableArray alloc] init];
-    NSString *result;
+    NSError *error;
+    NSString *bstring =[NSString stringWithFormat:@"http://%@",[uniquearray objectAtIndex:0]];
+    NSURL *burl = [NSURL URLWithString:bstring];
+    NSData *burlData = NULL;
+    burlData = [NSData dataWithContentsOfURL:burl options:NSDataReadingUncached error:&error];
+    NSString *bStr = [[NSString alloc] initWithData:burlData encoding:NSASCIIStringEncoding];
+    NSString *FixedURL=@"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*";
+    NSString *urlRegEx=[NSString stringWithFormat:@"%@%@%@",self.ImageURLHelper.stringValue,FixedURL,self.ImageURLHelperEnd.stringValue];
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:urlRegEx options:NSRegularExpressionCaseInsensitive error:&error];
+    NSArray *arrayOfAllMatches = [regex matchesInString:bStr options:0 range:NSMakeRange(0, [bStr length])];
+    for (NSTextCheckingResult *match in arrayOfAllMatches) {
+            NSString *substringForMatch = [bStr substringWithRange:match.range];
+            [imageurlarray addObject:substringForMatch];
+        }
+    //NSPredicate *sPredicate =
+    //[NSPredicate predicateWithFormat:@"SELF contains[c] 'super'"];
+    //[imageurlarray filterUsingPredicate:sPredicate];
+    NSRange range = NSMakeRange(0, [[_URLarrayController arrangedObjects] count]);
+    [_URLarrayController removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
+    for (id obj in imageurlarray)
+    {
+        [_URLarrayController addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:obj,@"URLs" ,nil]];
+    }
+
+}
+
+- (IBAction)GetImageUrls:(id)sender {
+    
+    imageurlarray = [[NSMutableArray alloc] init];
     NSError *error;
     for (id obj in uniquearray)
     {
-        NSString *bstring =[NSString stringWithFormat:@"http://%@",obj];
-        NSURL *burl = [NSURL URLWithString:bstring];
-        NSData *burlData = NULL;
-        
-        while(burlData==NULL)
-        {
-            burlData = [NSData dataWithContentsOfURL:burl options:NSDataReadingUncached error:&error];
-            
-        }
-        NSString *bStr = [[NSString alloc] initWithData:burlData encoding:NSASCIIStringEncoding];
-        //NSLog(@"content = %@", bStr);
-        //NSString *urlRegEx=@"http?://llthumb([-\\w\\.]+)+(:\\d+)?(/([\\w/_\\.]*(\\?\\S+)?)?)?(\\jpg)";
-       
-         NSString *urlRegEx = @"http://llthumb.bids.com/mod/sales/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*";
-        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:urlRegEx options:NSRegularExpressionCaseInsensitive error:&error];
-        
-        NSArray *arrayOfAllMatches = [regex matchesInString:bStr options:0 range:NSMakeRange(0, [bStr length])];
-        
-        for (NSTextCheckingResult *match in arrayOfAllMatches) {
-            NSString *substringForMatch = [bStr substringWithRange:match.range];
-            // NSLog(@"%@",substringForMatch);
-            //NSString *stringURL=[NSString stringWithFormat:@"www.modnique.com%@",substringForMatch];
-            [imageurlarray addObject:substringForMatch];
-           
-            //uniquearray= [arrayOfURLs valueForKeyPath:@"@distinctUnionOfObjects.self"];
-        }
-
-        
+    NSString *bstring =[NSString stringWithFormat:@"http://%@",obj];
+    NSURL *burl = [NSURL URLWithString:bstring];
+    NSData *burlData = NULL;
+    burlData = [NSData dataWithContentsOfURL:burl options:NSDataReadingUncached error:&error];
+    NSString *bStr = [[NSString alloc] initWithData:burlData encoding:NSASCIIStringEncoding];
+    NSString *FixedURL=@"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*";
+    NSString *urlRegEx=[NSString stringWithFormat:@"%@%@%@",self.ImageURLHelper.stringValue,FixedURL,self.ImageURLHelperEnd.stringValue];
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:urlRegEx options:NSRegularExpressionCaseInsensitive error:&error];
+    NSArray *arrayOfAllMatches = [regex matchesInString:bStr options:0 range:NSMakeRange(0, [bStr length])];
+    for (NSTextCheckingResult *match in arrayOfAllMatches)
+    {
+        NSString *substringForMatch = [bStr substringWithRange:match.range];
+        substringForMatch=[NSString stringWithFormat:@"%@%@",self.ImageRootURL.stringValue,substringForMatch];
+        [imageurlarray addObject:substringForMatch];
     }
+    }
+   // NSString *ImageFilterURL=[NSString stringWithFormat:@"SELF contains[c] '%@'",self.FilterImageUrls.stringValue];
+   // NSPredicate *sPredicate =
+    //[NSPredicate predicateWithFormat:ImageFilterURL];
+    //	[imageurlarray filterUsingPredicate:sPredicate];
+    NSRange range = NSMakeRange(0, [[_URLarrayController arrangedObjects] count]);
+    [_URLarrayController removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
+    for (id obj in imageurlarray)
+    {
+    [_URLarrayController addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:obj,@"URLs" ,nil]];
+    }
+
+    
+//    imageurlarray = [[NSMutableArray alloc] init];
+//    NSError *error;
+//    for (id obj in uniquearray)
+//    {
+//        NSString *bstring =[NSString stringWithFormat:@"http://%@",obj];
+//        NSURL *burl = [NSURL URLWithString:bstring];
+//        NSData *burlData = NULL;
+//        while(burlData==NULL)
+//        {
+//            burlData = [NSData dataWithContentsOfURL:burl options:NSDataReadingUncached error:&error];
+//            
+//        }
+//        NSString *bStr = [[NSString alloc] initWithData:burlData encoding:NSASCIIStringEncoding];
+//         NSString *urlRegEx = @"http://llthumb.bids.com/mod/sales/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*";
+//        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:urlRegEx options:NSRegularExpressionCaseInsensitive error:&error];
+//        
+//        NSArray *arrayOfAllMatches = [regex matchesInString:bStr options:0 range:NSMakeRange(0, [bStr length])];
+//        
+//        for (NSTextCheckingResult *match in arrayOfAllMatches) {
+//            NSString *substringForMatch = [bStr substringWithRange:match.range];
+//            [imageurlarray addObject:substringForMatch];
+//        }
+//    }
+//    NSPredicate *sPredicate =
+//    [NSPredicate predicateWithFormat:@"SELF contains[c] 'super'"];
+//    [imageurlarray filterUsingPredicate:sPredicate];
+//    NSRange range = NSMakeRange(0, [[_URLarrayController arrangedObjects] count]);
+//    [_URLarrayController removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
+//    for (id obj in imageurlarray)
+//    {
+//        [_URLarrayController addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:obj,@"URLs" ,nil]];
+//    }
+    
+}
+- (IBAction)FilterImageURLs:(id)sender {
+    NSString *ImageFilterURL=[NSString stringWithFormat:@"SELF contains[c] '%@'",self.FilterImageUrls.stringValue];
     NSPredicate *sPredicate =
-    [NSPredicate predicateWithFormat:@"SELF contains[c] 'super'"];
+    [NSPredicate predicateWithFormat:ImageFilterURL];
     [imageurlarray filterUsingPredicate:sPredicate];
     NSRange range = NSMakeRange(0, [[_URLarrayController arrangedObjects] count]);
     [_URLarrayController removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
@@ -86,10 +153,30 @@
     {
         [_URLarrayController addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:obj,@"URLs" ,nil]];
     }
-    
-    
+}
+
+- (IBAction)ModifyURLs:(id)sender {
+    NSMutableArray *temp=[NSMutableArray arrayWithArray:imageurlarray];
+    //temp=imageurlarray;
+    NSString *searchstring=self.SearchString.stringValue;
+    NSString *replacestring=self.ReplaceString.stringValue;
+    [imageurlarray removeAllObjects];
+    for (id obj in temp)
+    {
+        NSString *bstring =[NSString stringWithFormat:@"%@",obj];
+        bstring = [bstring stringByReplacingOccurrencesOfString:searchstring withString:replacestring];
+        [imageurlarray addObject:bstring];
+    }
+    NSRange range = NSMakeRange(0, [[_URLarrayController arrangedObjects] count]);
+    [_URLarrayController removeObjectsAtArrangedObjectIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
+    for (id obj in imageurlarray)
+    {
+        [_URLarrayController addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:obj,@"URLs" ,nil]];
+    }
     
 }
+
+
 - (IBAction)DownloadImages:(id)sender {
     NSString *tvarDirectory;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -102,12 +189,8 @@
     {
         tvarDirectory = [paths objectAtIndex:0];
     }
-    
     self.SavePath.stringValue=tvarDirectory;
-
-    
-    
-     NSError *error;
+    NSError *error;
     for (id obj in imageurlarray)
     {
         NSString *url =[NSString stringWithFormat:@"%@",obj];
@@ -118,7 +201,6 @@
         [data writeToFile:filePath atomically:YES];
     }
 }
-
 //Useless Code
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
@@ -184,7 +266,5 @@
     //    // return non-mutable version of the array
     
 }
-
-
 
 @end
