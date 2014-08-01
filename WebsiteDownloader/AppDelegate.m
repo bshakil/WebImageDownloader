@@ -16,8 +16,27 @@
     NSData *urlData = [NSData dataWithContentsOfURL:url];
     MainWebpageSource = [[NSString alloc] initWithData:urlData encoding:NSASCIIStringEncoding];
     self.textSource.stringValue=MainWebpageSource;
-    self.RootURL.stringValue=[url host];
-    self.ImageRootURL.stringValue= [NSString stringWithFormat:@"http://%@",[url host]];
+    //self.RootURL.stringValue=[url host];
+    if ([[url host] isEqual:@"www.modnique.com"]) {
+        self.RootURL.stringValue=[url host];
+        self.FilterURL.stringValue=@"/product/Women/";
+        self.ImageURLHelper.stringValue=@"http://";
+        self.FilterImageUrls.stringValue=@"super";
+    }
+    if ([[url host] isEqual:@"www.amazon.com"]) {
+        self.FilterURL.stringValue=@"www.amazon.com/";
+        self.ImageURLHelper.stringValue=@"http://";
+        self.ImageURLHelperEnd.stringValue=@".mp4";
+    }
+    if ([[url host] isEqual:@"www.ruelala.com"]) {
+        self.RootURL.stringValue=[url host];
+        self.FilterURL.stringValue=@"/event/product/";
+        self.ImageURLHelper.stringValue=@"http://";
+        self.SearchString.stringValue=@"RLLD_1.jpg";
+        self.ReplaceString.stringValue=@"RLLZ_1.jpg";
+        //self.ImageURLHelperEnd.stringValue=@".mp4";
+    }
+    //self.ImageRootURL.stringValue= [NSString stringWithFormat:@"http://%@",[url host]];
 }
 
 - (IBAction)GetChildURLs:(id)sender {
@@ -83,6 +102,11 @@
     NSString *bstring =[NSString stringWithFormat:@"http://%@",obj];
     NSURL *burl = [NSURL URLWithString:bstring];
     NSData *burlData = NULL;
+        if (burl==nil) {
+            
+        }
+        else
+        {
     burlData = [NSData dataWithContentsOfURL:burl options:NSDataReadingUncached error:&error];
     NSString *bStr = [[NSString alloc] initWithData:burlData encoding:NSASCIIStringEncoding];
     NSString *FixedURL=@"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*";
@@ -140,6 +164,7 @@
 //    {
 //        [_URLarrayController addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:obj,@"URLs" ,nil]];
 //    }
+    }
     
 }
 - (IBAction)FilterImageURLs:(id)sender {
@@ -194,10 +219,11 @@
     for (id obj in imageurlarray)
     {
         NSString *url =[NSString stringWithFormat:@"%@",obj];
-        NSString *theFileName = [[url lastPathComponent] stringByDeletingPathExtension];
+       // NSString *theFileName   = [[url lastPathComponent] stringByDeletingPathExtension];
+        NSString *theFileName   = [url lastPathComponent];
         NSURL *burl = [NSURL URLWithString:url];
         NSData *data = [NSData dataWithContentsOfURL:burl options:NSDataReadingUncached error:&error];
-        NSString *filePath = [NSString stringWithFormat:@"%@/%@.jpg", tvarDirectory,theFileName];
+        NSString *filePath = [NSString stringWithFormat:@"%@/%@", tvarDirectory,theFileName];
         [data writeToFile:filePath atomically:YES];
     }
 }

@@ -29,5 +29,6 @@
 @property (weak) IBOutlet NSTextField *FilterImageUrls;
 @property (weak) IBOutlet NSTextField *SearchString;
 @property (weak) IBOutlet NSTextField *ReplaceString;
+@property (weak) IBOutlet NSComboBox *WebSiteSelector;
 
 @end
